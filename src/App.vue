@@ -1,6 +1,6 @@
 <script>
 import { RouterLink, RouterView } from 'vue-router'
-import { mapActions } from 'pinia';
+import { mapActions, mapState } from 'pinia';
 import UserStore from '@/stores/user.js';
 
 export default {
@@ -9,12 +9,31 @@ export default {
     RouterLink,
     RouterView,
   },
+  computed: {
+    ...mapState(UserStore, ['user'])
+  },
   async created() {
-    //await this.fetchUser();
+    try {
+      await this.fetchUser();
+    } catch (e) {
+      console.error(e);
+    }
   },
   methods: {
-    ...mapActions(UserStore, ['fetchUser']),
-  }
+    ...mapActions(UserStore, ['fetchUser', 'signOut']),
+    _checkUserExist() {
+      if (this.user) {
+        this.$router.push({ path: '/' });
+      } else {
+        this.$router.push({ path: '/auth/sign-in' });
+      }
+    },
+  },
+  watch: {
+    user () {
+      this._checkUserExist();
+    }
+  },
 }
 </script>
 
@@ -25,6 +44,7 @@ export default {
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/auth/sign-in">Sign-In</RouterLink>
         <RouterLink to="/auth/sign-up">Sign-Up</RouterLink>
+        <button @click="signOut()">Sign Out</button>
       </nav>
     </div>
   </header>
