@@ -15,8 +15,6 @@ export default defineStore('tasks', {
         console.error(error);
         return;
       }
-      console.log('hey')
-      console.log(data);
       this.tasksList = data;
     },
     async _addNewTask({ title, user_id }) {
@@ -29,8 +27,21 @@ export default defineStore('tasks', {
         console.error(error);
         return;
       }
-      console.log(data);
       this.tasksList.push(...data);
+    },
+    async _updateData({ is_complete, id }){  
+      const { data, error } = await supabase
+      .from('tasks')
+      .update({ 'is_complete': is_complete })
+      .eq('id', id)
+      .select()
+
+      if (error) {
+        console.error(error);
+        return;
+      }
+
+      this.tasksList.find((t) => t.id === data[0].id).is_complete = data[0].is_complete;
     }
   }
 })

@@ -38,7 +38,7 @@ export default {
 </script>
 
 <template>
-  <header>
+  <!-- <header>
     <div class="wrapper">
       <nav>
         <RouterLink to="/">Home</RouterLink>
@@ -47,7 +47,7 @@ export default {
         <button @click="signOut()">Sign Out</button>
       </nav>
     </div>
-  </header>
+  </header> -->
 
   <RouterView />
 </template>
