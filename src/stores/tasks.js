@@ -29,7 +29,7 @@ export default defineStore('tasks', {
       }
       this.tasksList.push(...data);
     },
-    async _updateData({ is_complete, id }){  
+    async _updateData({ is_complete, id }) {  
       const { data, error } = await supabase
       .from('tasks')
       .update({ 'is_complete': is_complete })
@@ -42,6 +42,21 @@ export default defineStore('tasks', {
       }
 
       this.tasksList.find((t) => t.id === data[0].id).is_complete = data[0].is_complete;
+    },
+    async _deleteData({ id }) {
+      const { data, error } = await supabase
+      .from('tasks')
+      .delete()
+      .eq('id', id)
+      .select()
+
+      if (error) {
+        console.error(error);
+        return;
+      }
+      
+      const index = this.tasksList.map(e => e.id).indexOf(id);
+      this.tasksList.splice(index, 1);
     }
   }
 })

@@ -8,7 +8,7 @@ export default{
   name: 'HomeView',
   data: () => ({
     newTask: '',
-    appTitle: 'Awesome App',
+    appTitle: 'Tasks List final project',
     sidebar: false,
     completedTasks: [],
     uncompletedTasks: [],
@@ -18,17 +18,21 @@ export default{
     RouterView,
   },
   methods: {
-    ...mapActions(tasksStore, ['_fetchAllTasks', '_addNewTask', '_updateData']),
+    ...mapActions(tasksStore, ['_fetchAllTasks', '_addNewTask', '_updateData', '_deleteData']),
     ...mapActions(UserStore, ['signOut']),
     AddTask() {
       if (this.newTask.trim() === '') {
         return
       }
       this._addNewTask({ title: this.newTask, user_id: this.user.id });
-    },
+      this.newTask =  '';
+    },  
     setTaskState({ is_complete, id }){
       this._updateData({ is_complete, id });
-    }
+    },
+    deleteTask(id) {
+      this._deleteData({ id: id });
+    },
   },
   computed: {
     ...mapState(tasksStore, ['tasksList']),
@@ -131,9 +135,29 @@ export default{
             </tr>
           </thead>
           <tbody>
-            <tr v-for="task in this.tasksList.filter((t) => !t.is_complete)" :key="task.id" @click="setTaskState({ is_complete: true, id: task.id })"
-                style="cursor: pointer;" :class="{ 'completedState': task.is_complete, 'uncompletedState': !task.is_complete }">
-              <td>{{ task.title }}</td> 
+            <tr v-for="task in this.tasksList.filter((t) => !t.is_complete)" :key="task.id">
+              <td>
+                <v-row no-gutters>
+                  <v-col
+                    cols="12"
+                    sm="8"
+                  >
+                    {{ task.title }}
+                  </v-col>
+                  <v-col
+                    cols="12"
+                    sm="2"
+                  >
+                  <input type="checkbox" @click="setTaskState({ is_complete: true, id: task.id })">
+                </v-col>
+                  <v-col
+                    cols="12"
+                    sm="2"
+                  >
+                  <v-icon left dark icon="mdi-delete" @click="deleteTask(task.id)"></v-icon>
+                  </v-col>
+                </v-row>
+              </td> 
             </tr>
           </tbody>
         </v-table>
@@ -152,9 +176,29 @@ export default{
             </tr>
           </thead>
           <tbody>
-            <tr v-for="task in this.tasksList.filter((t) => t.is_complete)" :key="task.id" @click="setTaskState({ is_complete: false, id: task.id })"
-                :class="{ 'completedState': task.is_complete, 'uncompletedState': !task.is_complete }">
-              <td>{{ task.title }}</td>
+            <tr v-for="task in this.tasksList.filter((t) => t.is_complete)" :key="task.id">
+              <td>
+                <v-row no-gutters>
+                  <v-col
+                    cols="12"
+                    sm="8"
+                  >
+                    {{ task.title }}
+                  </v-col>
+                  <v-col
+                    cols="12"
+                    sm="2"
+                  >
+                  <input type="checkbox" checked="true" @click="setTaskState({ is_complete: false, id: task.id })">
+                </v-col>
+                  <v-col
+                    cols="12"
+                    sm="2"
+                  >
+                  <v-icon left dark icon="mdi-delete" @click="deleteTask(task.id)"></v-icon>
+                  </v-col>
+                </v-row>
+              </td>
             </tr>
           </tbody>
         </v-table>
