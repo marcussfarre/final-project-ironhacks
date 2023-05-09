@@ -43,6 +43,20 @@ export default defineStore('tasks', {
 
       this.tasksList.find((t) => t.id === data[0].id).is_complete = data[0].is_complete;
     },
+    async _updateTitle({ title, id }) {  
+      const { data, error } = await supabase
+      .from('tasks')
+      .update({ 'title': title })
+      .eq('id', id)
+      .select()
+
+      if (error) {
+        console.error(error);
+        return;
+      }
+
+      this.tasksList.find((t) => t.id === data[0].id).title = data[0].title;
+    },
     async _deleteData({ id }) {
       const { data, error } = await supabase
       .from('tasks')

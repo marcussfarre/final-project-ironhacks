@@ -8,17 +8,20 @@ export default{
   name: 'HomeView',
   data: () => ({
     newTask: '',
-    appTitle: 'Tasks List final project',
+    taskToUpdateField: '',
+    appTitle: 'IRONHACKERS TASKS PROJECT',
     sidebar: false,
     completedTasks: [],
     uncompletedTasks: [],
+    taskToUpdate: '',
+    dialog: false,
   }),
   components: {
     RouterLink,
     RouterView,
   },
   methods: {
-    ...mapActions(tasksStore, ['_fetchAllTasks', '_addNewTask', '_updateData', '_deleteData']),
+    ...mapActions(tasksStore, ['_fetchAllTasks', '_addNewTask', '_updateData', '_deleteData', '_updateTitle']),
     ...mapActions(UserStore, ['signOut']),
     AddTask() {
       if (this.newTask.trim() === '') {
@@ -33,6 +36,14 @@ export default{
     deleteTask(id) {
       this._deleteData({ id: id });
     },
+    updateTitle() {
+      this._updateTitle({ title: this.taskToUpdateField, id: this.taskToUpdate.id });
+      this.dialog = false;
+      this.taskToUpdate = '';
+    },
+    required (v) {
+        return !!v || 'Field is required'
+      },
   },
   computed: {
     ...mapState(tasksStore, ['tasksList']),
@@ -48,7 +59,7 @@ export default{
 
 <template>
   <main>
-    <v-toolbar>
+    <v-toolbar class="toolBar">
       <span class="hidden-sm-and-up">
         <v-toolbar-side-icon @click="sidebar = !sidebar">
         </v-toolbar-side-icon>
@@ -76,7 +87,7 @@ export default{
         </v-btn>
       </v-toolbar-items>
     </v-toolbar>
-    <v-expansion-panels>
+    <v-expansion-panels class="addTaskPanel">
       <v-expansion-panel>
         <v-expansion-panel-title>
           <template v-slot:default="{ expanded }">
@@ -110,7 +121,7 @@ export default{
             <v-spacer></v-spacer>
             <v-btn
               variant="text"
-              color="secondary"
+              class="buttons"
               @click="AddTask()"
             >
               Save
@@ -129,7 +140,7 @@ export default{
         <v-table theme="light">
           <thead>
             <tr>
-              <th class="text-left">
+              <th class="text-left titles">
                 Tasks to do
               </th>
             </tr>
@@ -138,23 +149,59 @@ export default{
             <tr v-for="task in this.tasksList.filter((t) => !t.is_complete)" :key="task.id">
               <td>
                 <v-row no-gutters>
-                  <v-col
-                    cols="12"
-                    sm="8"
-                  >
+                  <v-col cols="12" sm="9">
                     {{ task.title }}
                   </v-col>
-                  <v-col
-                    cols="12"
-                    sm="2"
-                  >
-                  <input type="checkbox" @click="setTaskState({ is_complete: true, id: task.id })">
-                </v-col>
-                  <v-col
-                    cols="12"
-                    sm="2"
-                  >
-                  <v-icon left dark icon="mdi-delete" @click="deleteTask(task.id)"></v-icon>
+                  <v-col cols="12" sm="1">
+                    <input type="checkbox" @click="setTaskState({ is_complete: true, id: task.id })">
+                  </v-col>
+                  <v-col cols="12" sm="1">
+                    <v-icon left dark icon="mdi-delete" @click="deleteTask(task.id)"></v-icon>
+                  </v-col>
+                  <v-col cols="12" sm="1">
+                    <template v-slot:activator="{ props }">
+                      <v-icon icon="mdi-pencil" v-bind="props"></v-icon>
+                    </template>
+                    <v-dialog v-model="dialog" width="800">
+                      <template v-slot:activator="{ props }">
+                        <v-icon icon="mdi-pencil" v-bind="props" @click="taskToUpdate = task"></v-icon>
+                      </template>
+                      <v-card>
+                        <v-card-title>
+                          <span class="text-h5">Update task</span>
+                        </v-card-title>
+                        <v-card-text>
+                          <v-text-field
+                            hide-details
+                            disabled
+                          >{{ taskToUpdate.title }}</v-text-field>
+                          <v-text-field
+                            v-model="taskToUpdateField"
+                            hide-details
+                            placeholder="New task Name"
+                            class="mt-4"
+                            :rules="[required]"
+                          ></v-text-field>
+                        </v-card-text>
+                        <v-card-actions>
+                          <v-spacer></v-spacer>
+                          <v-btn
+                            variant="text"
+                            @click="dialog = false"
+                            class="buttons"
+                          >
+                            Close
+                          </v-btn>
+                          <v-btn
+                            variant="text"
+                            class="buttons"
+                            @click="updateTitle()"
+                          >
+                            Update
+                          </v-btn>
+                        </v-card-actions>
+                      </v-card>
+                    </v-dialog>
                   </v-col>
                 </v-row>
               </td> 
@@ -170,7 +217,7 @@ export default{
         <v-table theme="light">
           <thead>
             <tr>
-              <th class="text-left">
+              <th class="text-left titles">
                 Tasks done
               </th>
             </tr>
@@ -179,26 +226,62 @@ export default{
             <tr v-for="task in this.tasksList.filter((t) => t.is_complete)" :key="task.id">
               <td>
                 <v-row no-gutters>
-                  <v-col
-                    cols="12"
-                    sm="8"
-                  >
+                  <v-col cols="12" sm="9">
                     {{ task.title }}
                   </v-col>
-                  <v-col
-                    cols="12"
-                    sm="2"
-                  >
-                  <input type="checkbox" checked="true" @click="setTaskState({ is_complete: false, id: task.id })">
-                </v-col>
-                  <v-col
-                    cols="12"
-                    sm="2"
-                  >
-                  <v-icon left dark icon="mdi-delete" @click="deleteTask(task.id)"></v-icon>
+                  <v-col cols="12" sm="1">
+                    <input type="checkbox" checked="true" @click="setTaskState({ is_complete: false, id: task.id })">
+                  </v-col>
+                  <v-col cols="12" sm="1">
+                    <v-icon left dark icon="mdi-delete" @click="deleteTask(task.id)"></v-icon>
+                  </v-col>
+                  <v-col cols="12" sm="1">
+                    <template v-slot:activator="{ props }">
+                      <v-icon icon="mdi-pencil" v-bind="props"></v-icon>
+                    </template>
+                    <v-dialog v-model="dialog" width="800">
+                      <template v-slot:activator="{ props }">
+                        <v-icon icon="mdi-pencil" v-bind="props" @click="taskToUpdate = task"></v-icon>
+                      </template>
+                      <v-card>
+                        <v-card-title>
+                          <span class="text-h5">Update task</span>
+                        </v-card-title>
+                        <v-card-text>
+                          <v-text-field
+                            hide-details
+                            disabled
+                          >{{ taskToUpdate.title }}</v-text-field>
+                          <v-text-field
+                            v-model="taskToUpdateField"
+                            hide-details
+                            placeholder="New task Name"
+                            class="mt-4"
+                            :rules="[required]"
+                          ></v-text-field>
+                        </v-card-text>
+                        <v-card-actions>
+                          <v-spacer></v-spacer>
+                          <v-btn
+                            variant="text"
+                            @click="dialog = false"
+                            class="buttons"
+                          >
+                            Close
+                          </v-btn>
+                          <v-btn
+                            variant="text"
+                            class="buttons"
+                            @click="updateTitle()"
+                          >
+                            Update
+                          </v-btn>
+                        </v-card-actions>
+                      </v-card>
+                    </v-dialog>
                   </v-col>
                 </v-row>
-              </td>
+              </td> 
             </tr>
           </tbody>
         </v-table>
@@ -217,5 +300,17 @@ table, th, td {
 }
 .uncompletedState {
   background-color: yellow;
+}
+.toolBar {
+  background-color: #adb5bd;
+}
+.buttons {
+  color: #212529;
+}
+.addTaskPanel {
+  margin: 2% 0;
+}
+.titles {
+  background-color: #adb5bd;
 }
 </style>

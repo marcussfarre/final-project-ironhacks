@@ -84,5 +84,6 @@ export default{
 <style scoped>
 .signUpCard {
   width: 50%;
+  margin: 20% auto;
 }
 </style>
