@@ -18,8 +18,6 @@ export default defineStore('tasks', {
       this.tasksList = data;
     },
     async _addNewTask({ title, user_id }) {
-      console.log(user_id);
-      console.log(title);
       const { data, error } = await supabase
       .from('tasks')
       .insert({ title, user_id })

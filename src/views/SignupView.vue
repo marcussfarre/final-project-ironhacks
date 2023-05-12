@@ -10,7 +10,9 @@ export default{
   data: () => ({
     email: '',
     password: '',
+    confirmedPassword: '',
     showPassword: false,
+    showConfirmedPassword: false,
     loading: false,
     form: false,
   }),
@@ -64,6 +66,19 @@ export default{
                 counter
                 @click:append="showPassword = !showPassword"
               ></v-text-field>
+            <v-text-field
+              :rules="[[required], (this.password === this.confirmedPassword) || 'Password must match']"
+              clearable
+              style="margin-top: 3%;"
+              v-model="confirmedPassword"
+              :append-icon="!showConfirmedPassword ? 'mdi-eye' : 'mdi-eye-off'"
+              :type="showConfirmedPassword ? 'text' : 'password'"
+              name="userConfirmPassword"
+              label="Confirm Password"
+              hint="At least 8 characters"
+              counter
+              @click:append="showConfirmedPassword = !showConfirmedPassword"
+            ></v-text-field>
         </v-card-item>
         <v-card-actions>
           <v-btn prepend-icon="mdi-post" 

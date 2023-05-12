@@ -51,9 +51,9 @@ export default{
     ...mapState(UserStore, ['user'])
   },
   created() {
-    this._fetchAllTasks();
   },
   mounted() {
+    this._fetchAllTasks();
   }
 }
 </script>
