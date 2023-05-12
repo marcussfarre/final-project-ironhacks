@@ -84,7 +84,6 @@ export default{
 
 <style scoped>
 .signInCard {
-  width: 50%;
   margin: 20% auto;
 }
 </style>
