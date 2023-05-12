@@ -37,6 +37,7 @@ export default{
       this._deleteData({ id: id });
     },
     updateTitle() {
+
       this._updateTitle({ title: this.taskToUpdateField, id: this.taskToUpdate.id });
       this.dialog = false;
       this.taskToUpdate = '';
@@ -148,17 +149,17 @@ export default{
           <tbody>
             <tr v-for="task in this.tasksList.filter((t) => !t.is_complete)" :key="task.id">
               <td>
-                <v-row no-gutters>
-                  <v-col cols="12" sm="9">
+                <v-row no-gutters @click.prevent="updateTitle()">
+                  <v-col cols="9" sm="9" xs="9" style="margin-right: -10%;">
                     {{ task.title }}
                   </v-col>
-                  <v-col cols="12" sm="1">
+                  <v-col cols="1" sm="1" xs="1" class="mr-2">
                     <input type="checkbox" @click="setTaskState({ is_complete: true, id: task.id })">
                   </v-col>
-                  <v-col cols="12" sm="1">
+                  <v-col cols="1" sm="1" xs="1" class="mr-2">
                     <v-icon left dark icon="mdi-delete" @click="deleteTask(task.id)"></v-icon>
                   </v-col>
-                  <v-col cols="12" sm="1">
+                  <v-col cols="1" sm="1" xs="1" class="mr-2">
                     <template v-slot:activator="{ props }">
                       <v-icon icon="mdi-pencil" v-bind="props"></v-icon>
                     </template>
@@ -223,19 +224,19 @@ export default{
             </tr>
           </thead>
           <tbody>
-            <tr v-for="task in this.tasksList.filter((t) => t.is_complete)" :key="task.id">
+            <tr v-for="task in this.tasksList.filter((t) => t.is_complete)" :key="task.id" @click.prevent="updateTitle()">
               <td>
                 <v-row no-gutters>
-                  <v-col cols="12" sm="9">
+                  <v-col cols="9" sm="9" xs="9" style="margin-right: -10%;">
                     {{ task.title }}
                   </v-col>
-                  <v-col cols="12" sm="1">
-                    <input type="checkbox" checked="true" @click="setTaskState({ is_complete: false, id: task.id })">
+                  <v-col cols="1" sm="1" xs="1" class="mr-2">
+                    <input type="checkbox" checked="true" @click.prevent="setTaskState({ is_complete: false, id: task.id })">
                   </v-col>
-                  <v-col cols="12" sm="1">
+                  <v-col cols="1" sm="1" xs="1" class="mr-2">
                     <v-icon left dark icon="mdi-delete" @click="deleteTask(task.id)"></v-icon>
                   </v-col>
-                  <v-col cols="12" sm="1">
+                  <v-col cols="1" sm="1" xs="1" class="mr-2">
                     <template v-slot:activator="{ props }">
                       <v-icon icon="mdi-pencil" v-bind="props"></v-icon>
                     </template>
@@ -312,5 +313,9 @@ table, th, td {
 }
 .titles {
   background-color: #adb5bd;
+}
+.p {
+  white-space: nowrap;
+      text-overflow: ellipsis;
 }
 </style>

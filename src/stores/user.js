@@ -10,7 +10,6 @@ export default defineStore('user', {
     actions: {
         async fetchUser() {      
             const { data: { user } } = await supabase.auth.getUser();
-            console.log(user);
             this.user = user;
         },
         async signUp(email, password) {
@@ -29,8 +28,8 @@ export default defineStore('user', {
                 password: password,
             })
             if (error) throw error;
-            if (data) this.user = data;
-            console.log(data);
+            console.log(data.user);
+            if (data) this.user = data.user;
         },
         async signOut() {
             const { error } = await supabase.auth.signOut()
